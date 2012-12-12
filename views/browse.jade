@@ -1,0 +1,27 @@
+extends layout
+block head
+    
+block content
+  h1= title
+  p These are a list of the files recently uploaded in this session.
+  
+  a(href="/") Back to Uploading
+
+  -# TODO: Corinne - When Collections are implemented, use it here instead of this temporary dump of data.
+  #uploaded_files
+    if data.length > 0
+      table
+        tr
+          th Filename
+          th # of Words
+          th # of Lines
+          th Click to view
+
+        each item in data
+          tr
+            td= item.file
+            td= item.words
+            td= item.lines
+            td 
+              a(href="#", onclick="javascript: alert('View feature coming soon!');") view
+    

@@ -1,0 +1,19 @@
+script(id="uploaded_file_template", type="text/template")
+  .file
+    .progress.progress-striped.active.hide
+      .bar(style="width: 0%")
+    .alert.hide
+      button.close(type="button", data-dismiss="alert") X
+      span
+        strong.message
+        .words
+          span
+          =" words"
+        .lines
+          span
+          =" lines"
+        a.show-file(href="#")
+          span Show
+          =" file contents"
+  pre.view.hide
+    

@@ -1,0 +1,27 @@
+extends layout
+block head
+    
+block content
+  h1= title
+  p Welcome to #{title}
+  
+  a(href="/browse", class="browse") View all uploaded files
+  
+  #uploader
+
+  #uploaded_files
+
+  script(id="upload_template", type="text/template")
+    form(id="uploader", method="post", enctype="multipart/form-data", action="/file-upload")
+      input(type="file", name="textfile", id="textfile", class="text")
+      input#upload(type="submit", value="Upload", class="submit")
+
+
+  include partials/uploaded_file_template.jade
+
+block script
+  script
+    $(function() {
+      // Initialize the view for the Upload File section 
+      new UploadView( {el: $("#uploader")} );
+    });

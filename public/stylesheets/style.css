@@ -1,0 +1,34 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+input.file {
+  height: 27px;
+  margin-left: 5px;
+}
+
+input.submit {
+  background-color: #33FF66;
+  height: 31px;
+  margin-left: 5px;
+  width: 120px !important;
+}
+
+input.submit:hover {
+  background-color: #33CC00;
+}
+
+a.browse {
+  margin: 10px;
+  display: block;
+}
+
+#uploaded_files table td, #uploaded_files table th {
+      padding-right: 5px;
+      text-align: center;
+}
