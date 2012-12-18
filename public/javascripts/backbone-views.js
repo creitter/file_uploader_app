@@ -1,3 +1,37 @@
+var FileCollectionView = Backbone.View.extend({
+  initialize : function() {
+    var that = this;
+    this._fileViews = [];
+    
+    this.collection.each(function(file) {
+      that._fileViews.push(new UpdatingUploadedFileView({model : file, tagName : 'li'}));
+    });
+  }
+  
+});
+
+var UploadView2 = Backbone.View.extend({
+  tagName : 'div',
+  className : 'uploadView',
+  render : function() {
+    this.el.innerHTML = this.model.get('filename');
+    return this;
+  }
+  
+});
+
+
+var UpdatingUploadedFileView = UploadView2.extend({
+  initialize : function(options) {
+    this.render = _.bind(this.render, this); 
+ 
+    this.model.bind('change:name', this.render);
+  }
+});
+
+
+
+
 var UploadView = Backbone.View.extend({
   initialize: function(){
     this.render();
