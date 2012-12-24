@@ -1,28 +1,7 @@
-// The view for the Upload File section 
-var view = new UploadView( {el: $("#uploader")} );
+var fileCollection = new FileCollection();
 
-var fileTemp = new UploadedFile ({
-  location: "/uploads/",
-   filename: "test.jpg",
-   words: 10,
-   lines: 40,
-   top_5: [],
-   done: false
-});
+var view = new UploadView( {el: $("#uploader"), collection: fileCollection} );
+view.render();
 
-var uploadedFiles = new UploadedFiles;
- 
-uploadedFiles.push(fileTemp);
-
-var fileCollectionView = new FileCollectionView({
-  collection : uploadedFiles,
-  el : $('ul.uploaded_files')[0]
-});
-
+var fileCollectionView = new FileCollectionView({el: $('#uploaded_files'), collection: fileCollection});
 fileCollectionView.render();
-
-var uploadView2 = new UploadView2({model : fileTemp});
-
-var renderedUploadFileElement = uploadView2.render().el;
-
-console.log (renderedUploadFileElement)

@@ -9,19 +9,16 @@ block content
   
   #uploader
 
-  ul#uploaded_files.temp
-
+  #uploaded_files
+  
   script(id="upload_template", type="text/template")
     form(id="uploader", method="post", enctype="multipart/form-data", action="/file-upload")
       input(type="file", name="textfile", id="textfile", class="text")
       input#upload(type="submit", value="Upload", class="submit")
 
+  
+  script(id="uploaded_files_template", type="text/template")
+    ul.files
+    
 
   include partials/uploaded_file_template.jade
-
-block script
-  script
-    $(function() {
-      // Initialize the view for the Upload File section 
-      new UploadView( {el: $("#uploader")} );
-    });

@@ -1,40 +1,7 @@
-var FileCollectionView = Backbone.View.extend({
-  initialize : function() {
-    var that = this;
-    this._fileViews = [];
-    
-    this.collection.each(function(file) {
-      that._fileViews.push(new UpdatingUploadedFileView({model : file, tagName : 'li'}));
-    });
-  }
-  
-});
-
-var UploadView2 = Backbone.View.extend({
-  tagName : 'div',
-  className : 'uploadView',
-  render : function() {
-    this.el.innerHTML = this.model.get('filename');
-    return this;
-  }
-  
-});
-
-
-var UpdatingUploadedFileView = UploadView2.extend({
-  initialize : function(options) {
-    this.render = _.bind(this.render, this); 
- 
-    this.model.bind('change:name', this.render);
-  }
-});
-
-
-
-
+/** To handle when a file gets uploaded */
 var UploadView = Backbone.View.extend({
   initialize: function(){
-    this.render();
+   
   },
   render: function() {
     var template = _.template($("#upload_template").html(), {} );
@@ -45,6 +12,7 @@ var UploadView = Backbone.View.extend({
   },
   uploadFile: function(evt) {
     evt.preventDefault();  // don't go anywhere 
+
     var file = document.getElementById("textfile").files[0];
     
     //Make sure we've actually selected a file
@@ -55,27 +23,22 @@ var UploadView = Backbone.View.extend({
     
     var formData = new FormData();
     formData.append("textfile", file);
-     
-    var uploadedFile = new UploadedFile();
-    var fileView = new FileView({model: uploadedFile});
     
-    /** TODO: Corinne Use a Collection instead - Saturday project **/
-    // I would rather just add this to a collection and let the collection view handle the rendering
-    // but for the sake of time, we'll go old school
-    $("#uploaded_files").prepend(fileView.render().el);
-
+    var uploadedFile = new UploadedFile();
+    this.collection.add(uploadedFile);
+    
     var xhr = new XMLHttpRequest();
     xhr.upload.onprogress = function(evt) {
      if (evt.lengthComputable) {
-       fileView.updateProgress(evt.loaded, evt.total);
+       uploadedFile.set('totalBytes', evt.total);
+       uploadedFile.set('loadedBytes', evt.loaded);
      }
     };
 
     xhr.onload = function(evt) {
-     fileView.hideProgress();
-     $('#textfile').val('')
-     var data = JSON.parse(xhr.responseText);
-     fileView.showInfo(this.statusText, data.filename);
+      $('#textfile').val('')
+      var data = JSON.parse(xhr.responseText);
+      uploadedFile.set('filename', data.filename);
     }
 
     xhr.onreadystatechange = function() {
@@ -98,11 +61,13 @@ var UploadView = Backbone.View.extend({
 
 
     // Starting the upload process
-    fileView.showProgress();
+    uploadedFile.set({start: true});
+    
     xhr.open("post", "/file-upload", true);
     xhr.send(formData);
-    }
+  }
 });
+
 
 /* Dislay a single file uploaded */
 var FileView = Backbone.View.extend({
@@ -115,7 +80,9 @@ var FileView = Backbone.View.extend({
   
   initialize: function() {
     this.render = _.bind(this.render, this); 
-    this.model.bind("change", this.updateModel, this);
+    this.model.bind("change:words", this.updateModel, this);
+    this.model.bind("change:bytesUploaded", this.showInfo);
+    this.model.bind("change:start", this.showProgress)
   } ,
   
   events: {
@@ -150,12 +117,14 @@ var FileView = Backbone.View.extend({
     });
   },
   
-  updateProgress: function(loadedBytes, totalBytes) {
-    var percentage = (loadedBytes / totalBytes) * 100;
+  updateProgress: function() {
+    
+    var percentage = (this.model.get('loadedBytes') / this.model.get('totalBytes')) * 100;
     this.$("div.progress div.bar", this.template()).css("width", percentage + "%");
   },
   
   showProgress: function(){
+    alert('showing')
     this.$("div.progress", this.template()).show();
   },
   
@@ -163,16 +132,39 @@ var FileView = Backbone.View.extend({
     this.$("div.progress", this.template()).hide();
   },
   
-  showInfo: function(statusText, filename) {
-    this.$("strong.message", this.template()).text(statusText + " [ " + filename + " ]")
+  showInfo: function() {
+    this.hideProgress();
+    var statusText = "TODO";
+    this.$("strong.message", this.template()).text(statusText + " [ " + this.model.get('filename') + " ]")
     this.$("div.alert", this.template()).show();
   }
 });
-  
 
-/**  TODO: Corinne - Create a collection view so I could just add the uploads to this collection and allow the view to render and manage it.  But for the sake of time, we'll just leave it commented out.
-var UploadedFileCollectionView = Backbone.View.extend({
-  // 
+/* Display collection of file views */
+var FileCollectionView = Backbone.View.extend({
+  template : _.template($("#uploaded_files_template").html()),
+  initialize : function() {
+    _(this).bindAll('add', 'remove');
+    
+    this._fileViews = [];
+
+    this.collection.each(this.add)    
+    this.collection.bind("add", this.add);
+  },
+  render : function() {
+    var that = this;
+    
+    this.$el.html(this.template());
+    
+    _(this._fileViews).each(function (fv) {
+      $(that.el).append(fv.render().el);
+    });
+  },
+  add: function(file) {
+    var fileView = new FileView({model: file});
+    this._fileViews.push(fileView);
+   // if (this._rendered) {
+      $(this.el).append(fileView.render().el)
+    //}
   }
 });
-**/

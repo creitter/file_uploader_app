@@ -1,21 +1,26 @@
-/* Inspired by: http://liquidmedia.ca/blog/2011/01/backbone-js-part-1/ */
-
 var UploadedFile = Backbone.Model.extend({
-   // Default attributes
-   defaults: function() {
+   defaults : function() {
      return {
-       location: "",
        filename: "",
        words: 0,
        lines: 0,
-       top_5: [],  //TODO: Corinne - There are plenty of 3rd party apps I can plug in here
-       done: false //TODO: Corinne - Necessary for the still uploading part of the feature request?
+       top_5: [],
+       loadedBytes: 0, 
+       totalBytes: 0,
+       start: false,
+       done: false
      };
+   },
+   initialize : function(file) {
+     // Use for validations for file param or setting defaults if not using the defaults function above.
+   },
+   validate : function(file) {
+     // Use for validations for file when setting attributes of the file.
    },
    url : function() {
      return this.id ? '/uploaded_files/' + this.id : '/uploaded_files';
    },
-   file: function() {
+   file : function() {
      return "/uploads/" + this.get('filename');
    }
  });
