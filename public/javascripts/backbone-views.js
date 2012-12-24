@@ -80,10 +80,10 @@ var FileView = Backbone.View.extend({
   
   initialize: function() {
     this.render = _.bind(this.render, this); 
+    this.model.bind("change:start", this.showProgress, this);
+    this.model.bind("change:loadedBytes", this.updateProgress, this);
     this.model.bind("change:words", this.updateModel, this);
-    this.model.bind("change:bytesUploaded", this.showInfo);
-    this.model.bind("change:start", this.showProgress)
-  } ,
+  },
   
   events: {
     "click button.close": "removeFile",
@@ -105,6 +105,7 @@ var FileView = Backbone.View.extend({
   },
 
   updateModel: function() {
+    this.showInfo();
     /* TODO: Corinne - Using event delegation, when words and lines are updated, check plurality and update text accordingly */
     this.$(".words span", this.template()).html(this.model.get("words"));
     this.$(".lines span", this.template()).html(this.model.get("lines"));
@@ -118,13 +119,11 @@ var FileView = Backbone.View.extend({
   },
   
   updateProgress: function() {
-    
     var percentage = (this.model.get('loadedBytes') / this.model.get('totalBytes')) * 100;
     this.$("div.progress div.bar", this.template()).css("width", percentage + "%");
   },
   
   showProgress: function(){
-    alert('showing')
     this.$("div.progress", this.template()).show();
   },
   
